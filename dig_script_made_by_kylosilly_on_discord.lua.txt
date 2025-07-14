@@ -69,7 +69,7 @@ local zone_names = {}
 local npc_names = {}
 
 local staff_option = "Notify"
-local dig_option = "Legit"
+
 
 local auto_sell_delay = 5
 local tp_walk_speed = 10
@@ -146,80 +146,67 @@ local movement_connection = run_service.Heartbeat:Connect(function()
     end
 end)
 
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+local wind_ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/NutHub41/Nhamnhi/refs/heads/main/dig_script_made_by_kylosilly_on_discord.lua.txt"))()
 
-
-
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local Lighting = game:GetService("Lighting")
-local player = Players.LocalPlayer
-
-wait(0.1)
-local Window = WindUI:CreateWindow({
-    Title = "VerdantHub | "..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."",
-    Icon = "rbxassetid://92380606785197",
-    Author = ".by Zuneh | .gg//dBh5TBKX",
-    Folder = "",
-    Size = UDim2.fromOffset(450, 290),
-    Transparent = true,
-    Theme = "Dark",
-    SideBarWidth = 200,
-    -- Background = "",
-    User = {
-        Enabled = true,
-        Anonymous = false,
-        Callback = function()
-            themes = {'Rose', 'Indigo', 'Plant', 'Red', 'Light', 'Dark'}
-            local count, curTheme = nil, WindUI:GetCurrentTheme()
-            if table.find(themes, curTheme) == #themes then count = -5 else count = 1 end
-            WindUI:SetTheme(themes[table.find(themes, curTheme)+count])
-        end,
+local window =
+    wind_ui:CreateWindow(
+    {
+        Title = "Made By @kylosilly",
+        Icon = "zap",
+        Author = "@kylosilly on discord",
+        Folder = "ur a skid<3",
+        Size = UDim2.fromOffset(450,350),
+        Transparent = true,
+        Theme = "Dark",
+        SideBarWidth = 200,
+        Background = "",
+        BackgroundImageTransparency = 0.42,
+        HideSearchBar = true,
+        ScrollBarEnabled = false,
+        User = {
+            Enabled = true,
+            Anonymous = true,
+            Callback = function()
+            end
+        }
     }
-})
+)
 
-
-Window:SetToggleKey(Enum.KeyCode.F15)
-
-
-
-
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
-
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0, 10, 1, -85)
-ImageButton.Size = UDim2.new(0, 50, 0, 50)
-ImageButton.Draggable = true
-ImageButton.Image = "http://www.roblox.com/asset/ ?id=92380606785197"
-
-UICorner.CornerRadius = UDim.new(0, 13) 
-UICorner.Parent = ImageButton
-
-ImageButton.MouseButton1Down:Connect(function()
-    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.F15,false, game)
-end)
-
-local farm_tab = Window:Tab({
+local farm_tab = window:Tab({
     Title = "Farm",
     Icon = "tractor",
     Locked = false,
 })
 
+local misc_tab = window:Tab({
+    Title = "Misc",
+    Icon = "cog",
+    Locked = false,
+})
 
+local inventory_tab = window:Tab({
+    Title = "Inventory",
+    Icon = "backpack",
+    Locked = false,
+})
 
+local teleport_tab = window:Tab({
+    Title = "Teleport",
+    Icon = "flip-horizontal-2",
+    Locked = false,
+})
 
-local minigame_connection
-local local_player = game.Players.LocalPlayer
+farm_tab:Section(
+    {
+        Title = "Dig Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
 
+-- Gán cố định kiểu auto dig
+local dig_option = "Blatant"
 
--- Toggle auto dig
 farm_tab:Toggle({
     Title = "Auto Dig Minigame",
     Desc = "Automatically does the dig minigame for you",
@@ -252,9 +239,11 @@ farm_tab:Toggle({
                         minigame_connection = player_bar:GetPropertyChangedSignal("Position"):Connect(function()
                             if not auto_dig then return end
 
-                            -- Blatant mode: dịch thanh người chơi về đúng chỗ và click luôn
-                            player_bar.Position = UDim2.new(strong_hit.Position.X.Scale, 0, 0, 0)
-                            firesignal(mobile_button.Activated)
+                            -- Vẫn dùng cấu trúc if nhưng gán cố định Blatant
+                            if dig_option == "Blatant" then
+                                player_bar.Position = UDim2.new(strong_hit.Position.X.Scale, 0, 0, 0)
+                                firesignal(mobile_button.Activated)
+                            end
                         end)
                     end
                 end
@@ -264,6 +253,8 @@ farm_tab:Toggle({
 })
 
 Instance.new("RemoteEvent", replicated_storage:FindFirstChild("Remotes")).Name = "bWFkZSBieSBAa3lsb3NpbGx5IG9uIGRpc2NvcmQgPDM"
+
+
 
 farm_tab:Toggle({
     Title = "Auto Holes",
@@ -297,15 +288,325 @@ farm_tab:Toggle({
     end
 })
 
+farm_tab:Section(
+    {
+        Title = "Farm Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
 
-
-spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
-        if AutoClick then
-             pcall(function()
-                game:GetService'VirtualUser':CaptureController()
-                game:GetService'VirtualUser':Button1Down(Vector2.new(1e4, 1e4))
-            end)
+farm_tab:Toggle({
+    Title = "Auto Pizza Delivery",
+    Desc = "Automatically does pizza deliverys",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = auto_pizza,
+    Callback = function(value) 
+        auto_pizza = value
+        if value then
+            repeat
+                replicated_storage:WaitForChild("Remotes"):WaitForChild("Change_Zone"):FireServer("Penguins Pizza")
+                replicated_storage:WaitForChild("DialogueRemotes"):WaitForChild("StartInfiniteQuest"):InvokeServer("Pizza Penguin")
+                wait(math.random(1, 3))
+                local_player.Character:MoveTo(workspace:FindFirstChild("Active"):FindFirstChild("PizzaCustomers"):FindFirstChildOfClass("Model"):GetPivot().Position)
+                wait(math.random(2, 5))
+                replicated_storage:WaitForChild("Remotes"):WaitForChild("Quest_DeliverPizza"):InvokeServer()
+                wait(math.random(1, 3))
+                replicated_storage:WaitForChild("Remotes"):WaitForChild("Change_Zone"):FireServer("Penguins Pizza")
+                replicated_storage:WaitForChild("DialogueRemotes"):WaitForChild("CompleteInfiniteQuest"):InvokeServer("Pizza Penguin")
+                task.wait(math.random(60, 90))
+            until not auto_pizza
         end
-    end)
+    end
+})
+
+misc_tab:Section(
+    {
+        Title = "Staff Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+function is_staff(v)
+    local rank = v:GetRankInGroup(35289532)
+    local role = v:GetRoleInGroup(35289532)
+    if rank >= 2 then
+        if staff_warn_method == "Kick" then
+            local_player:Kick(role.." detected! Username: "..v.DisplayName)
+        elseif staff_warn_method == "Notify" then
+            wind_ui:Notify(
+                {
+                    Title = "Staff Detected!",
+                    Content = role.." detected! Username: "..v.DisplayName,
+                    Icon = "message-circle-warning",
+                    Duration = 5
+                }
+            )
+        end
+    end
+end
+
+local player_join_connection = players.PlayerAdded:Connect(function(v)
+    is_staff(v)
 end)
+
+misc_tab:Toggle({
+    Title = "Anti Staff",
+    Desc = "Kicks/Notifies you when staff joins",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = false,
+    Callback = function(value) 
+        anti_staff = value
+        if value then
+            for _, v in players:GetPlayers() do
+                if v ~= local_player then
+                    is_staff(v)
+                end
+            end
+        end
+    end
+})
+
+misc_tab:Dropdown({
+    Title = "Choose Staff Method:",
+    Values = { "Notify", "Kick" },
+    Value = staff_option,
+    Callback = function(value) 
+        staff_option = value
+    end
+})
+
+misc_tab:Section(
+    {
+        Title = "Anti Afk Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+misc_tab:Toggle({
+    Title = "Anti Afk",
+    Desc = "Wont disconnect you after 20 minutes",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = anti_afk,
+    Callback = function(value) 
+        anti_afk = value
+    end
+})
+
+misc_tab:Section(
+    {
+        Title = "LocalPlayer Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+misc_tab:Toggle({
+    Title = "Inf Jump",
+    Desc = "Lets you jump infinitely",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = inf_jump,
+    Callback = function(value) 
+        inf_jump = value
+    end
+})
+
+misc_tab:Toggle({
+    Title = "Tp Walk",
+    Desc = "Lets You Move Fast",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = tp_walk,
+    Callback = function(value) 
+        tp_walk = value
+    end
+})
+
+misc_tab:Slider({
+    Title = "Tp Walk Speed:",
+    Step = 1,
+    
+    Value = {
+        Min = 1,
+        Max = 100,
+        Default = tp_walk_speed,
+    },
+    Callback = function(value)
+        tp_walk_speed = tonumber(value)
+    end
+})
+
+inventory_tab:Section(
+    {
+        Title = "Sell Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+inventory_tab:Toggle({
+    Title = "Auto Sell",
+    Desc = "Automatically sells every item in your inventory",
+    Icon = "check",
+    Type = "Checkbox",
+    Default = auto_sell,
+    Callback = function(value) 
+        auto_sell = value
+        if value then
+            repeat
+                for _, v in backpack:GetChildren() do
+                    replicated_storage:WaitForChild("DialogueRemotes"):WaitForChild("SellHeldItem"):FireServer(v)
+                end
+                task.wait(sell_delay)
+            until not auto_sell
+        end
+    end
+})
+
+inventory_tab:Slider({
+    Title = "Auto Sell Delay:",
+    Step = 1,
+    
+    Value = {
+        Min = 1,
+        Max = 60,
+        Default = sell_delay,
+    },
+    Callback = function(value)
+        sell_delay = tonumber(value)
+    end
+})
+
+inventory_tab:Button({
+    Title = "Sell All Items Once",
+    Desc = "Sells all items in your inventory",
+    Locked = false,
+    Callback = function()
+        for _, v in backpack:GetChildren() do
+            replicated_storage:WaitForChild("DialogueRemotes"):WaitForChild("SellHeldItem"):FireServer(v)
+        end
+    end
+})
+
+inventory_tab:Button({
+    Title = "Sell Held Item",
+    Desc = "Sells held item",
+    Locked = false,
+    Callback = function()
+        local tool = get_tool()
+        if not tool then
+            return wind_ui:Notify(
+                {
+                    Title = "No Tool",
+                    Content = "No Tool Found!",
+                    Icon = "message-circle-warning",
+                    Duration = 5
+                }
+            )
+        end
+        if not tool:GetAttribute("InventoryLink") then
+            return wind_ui:Notify(
+                {
+                    Title = "Cant Sell!",
+                    Content = "Cant Sell This Item!",
+                    Icon = "message-circle-warning",
+                    Duration = 5
+                }
+            )
+        end
+        replicated_storage:WaitForChild("DialogueRemotes"):WaitForChild("SellHeldItem"):FireServer(tool)
+    end
+})
+
+inventory_tab:Section(
+    {
+        Title = "Journal Settings",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+inventory_tab:Button({
+    Title = "Claim Unclaimed Discovered Items",
+    Desc = "Claims every unclaimed Discovered item in journal",
+    Locked = false,
+    Callback = function()
+        for _, v in local_player.PlayerGui:FindFirstChild("HUD"):FindFirstChild("Frame"):FindFirstChild("Journal"):FindFirstChild("Scroller"):GetChildren() do
+            if v:IsA("ImageButton") and v:FindFirstChild("Discovered").Visible then
+                firesignal(v.MouseButton1Click)
+            end
+        end
+    end
+})
+
+teleport_tab:Section(
+    {
+        Title = "Misc Teleports",
+        TextXAlignment = "Left",
+        TextSize = 17
+    }
+)
+
+teleport_tab:Button({
+    Title = "Teleport To Merchant",
+    Desc = "Teleports to merchant",
+    Locked = false,
+    Callback = function()
+        local_player.Character:MoveTo(npcs:FindFirstChild("Merchant Cart"):GetPivot().Position)
+    end
+})
+
+teleport_tab:Button({
+    Title = "Teleport To Meteor",
+    Desc = "Teleports to meteor",
+    Locked = false,
+    Callback = function()
+        if workspace:FindFirstChild("Active"):FindFirstChild("ActiveMeteor") then
+            local_player.Character:MoveTo(workspace.Active.ActiveMeteor:GetPivot().Position)
+        else
+            wind_ui:Notify(
+                {
+                    Title = "No Meteor",
+                    Content = "No Meteor Found!",
+                    Icon = "message-circle-warning",
+                    Duration = 5
+                }
+            )
+        end
+    end
+})
+
+teleport_tab:Button({
+    Title = "Teleport To EnchantmentAltar",
+    Desc = "Teleports to EnchantmentAltar",
+    Locked = false,
+    Callback = function()
+        local_player.Character:MoveTo(world:FindFirstChild("Interactive"):FindFirstChild("Enchanting"):FindFirstChild("EnchantmentAltar"):FindFirstChild("EnchantPart"):GetPivot().Position)
+    end
+})
+
+teleport_tab:Button({
+    Title = "Teleport To Active Totem",
+    Desc = "Teleports to closest active totem",
+    Locked = false,
+    Callback = function()
+        local totem = closest_totem()
+        if not totem then
+            return wind_ui:Notify(
+                {
+                    Title = "No Totem",
+                    Content = "No Active Totem Found!",
+                    Icon = "message-circle-warning",
+                    Duration = 5
+                }
+            )
+        end
+        local_player.Character:MoveTo(totem:GetPivot().Position)
+    end
+})
